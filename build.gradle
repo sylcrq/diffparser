@@ -1,3 +1,16 @@
+buildscript {
+    repositories {
+        maven {
+            url 'http://jfrog.cloud.qiyi.domain/iqiyi-maven-mcg/'
+        }
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.iqiyi.gradle:base:0.8.6'
+    }
+}
+
 plugins {
     id "java"
     id "com.jfrog.artifactory" version "4.5.4"
@@ -6,7 +19,7 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
+//    mavenLocal()
     mavenCentral()
     jcenter()
 }
@@ -15,7 +28,7 @@ repositories {
 version = '1.5' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 sourceCompatibility = 1.8
 
-ext{
+ext {
     bintrayUser = System.getProperty("bintray.user")
     bintrayKey = System.getProperty("bintray.key")
     buildNumber = System.getProperty("build.number")
@@ -102,7 +115,7 @@ artifactory {
             publishPom = true
             properties = [
                     'build.number': buildNumber,
-                    'build.name': 'diffparser'
+                    'build.name'  : 'diffparser'
             ]
         }
     }
@@ -127,7 +140,7 @@ bintray {
         version {
             name = project.version
             desc = "build ${buildNumber}"
-            released  = new Date()
+            released = new Date()
             gpg {
                 sign = true
             }
@@ -137,4 +150,27 @@ bintray {
     publish = true
 }
 
+apply plugin: 'com.iqiyi.build.simple-maven'
 
+simpleMaven {
+    // repo地址
+    url 'MAVEN_REPO_URL'.prop()
+    // repo的用户名 没有可不配置
+    username 'MAVEN_USERNAME'.prop()
+    // repo的密码 没有可不配置
+    password 'MAVEN_PASSWORD'.prop()
+    // 产物的名字 默认会用project.name
+    name 'diffparser'
+    // 产物组名 默认会用project.group
+    groupId 'io.reflectoring.diffparser'
+    // 产物id 默认会用project.name
+    artifactId 'diffparser'
+    // 产物版本号  默认会用project.version
+    version project.version
+    // 产物类型 不需要配置 由工程类型自动决定
+    packaging 'jar'
+    // 产物描述 可不配置
+    description ''
+    // 是否打包javadoc 可不配置
+    javadoc false
+}

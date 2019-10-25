@@ -1,0 +1,14 @@
+buildscript {
+    repositories {
+        maven {
+            url 'http://jfrog.cloud.qiyi.domain/iqiyi-maven-mcg/'
+        }
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.iqiyi.gradle:base:0.8.6'
+    }
+}
+
+apply plugin: 'com.iqiyi.build.inject-string'

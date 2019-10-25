@@ -1,18 +1,3 @@
-/**
- *    Copyright 2013-2015 Tom Hombergs (tom.hombergs@gmail.com | http://wickedsource.org)
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
 package io.reflectoring.diffparser.unified;
 
 import static io.reflectoring.diffparser.api.UnifiedDiffParser.LINE_RANGE_PATTERN;
@@ -272,6 +257,9 @@ public enum ParserState {
                     // We found another newline after the current newline without a start of a new diff in between. That makes the
                     // current line just a newline within the current diff.
                     return false;
+                } else if (matchesHunkStartPattern(futureLine) || matchesToLinePattern(futureLine) || matchesFromLinePattern(futureLine)) {
+                    // Fix mismatch
+                    return false;
                 } else {
                     i++;
                 }
@@ -282,10 +270,10 @@ public enum ParserState {
             // some diff tools like "svn diff" do not put an empty line between two diffs
             // we add that empty line and call the method again
             String nextFromFileLine = window.getFutureLine(3);
-            if(nextFromFileLine != null && matchesFromFilePattern(nextFromFileLine)){
+            if (nextFromFileLine != null && matchesFromFilePattern(nextFromFileLine)) {
                 window.addLine(1, "");
                 return matchesEndPattern(line, window);
-            }else{
+            } else {
                 return false;
             }
         }
